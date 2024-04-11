@@ -1,56 +1,71 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { SplashScreen, Stack } from 'expo-router';
-import { useEffect } from 'react';
-import { useColorScheme } from 'react-native';
 
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from 'expo-router';
+import React, { useEffect, useState } from 'react'
+import { Slot } from 'expo-router'
+import { View,StatusBar } from 'react-native';
+import AppLoading from 'expo-app-loading';
+import {
+    useFonts,
+    Poppins_400Regular,
+    Poppins_600SemiBold,
+    Poppins_500Medium,
+    Poppins_700Bold,
+   
+  } from '@expo-google-fonts/poppins';
+import AppStatusBar from '../layout/AppStatusBar';
 
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
+const height = StatusBar.currentHeight
+
+console.log(height);
+
+const Layout = () => {
+
+// const [fontsLoad,setFontLoad] = useState(false);
+
+// const [font,error] = useFonts({
+//     'Poppins400Regular':Poppins_400Regular
+
+// })
+
+
+const [fontsLoad] = useFonts({
+    'Poppins400Regular':Poppins_400Regular,
+    'Poppins_600SemiBold': Poppins_600SemiBold,
+   ' Poppins_500Medium ' :Poppins_500Medium,
+    'Poppins_700Bold' : Poppins_700Bold,
+
+})
+
+
+// useEffect(()=>{
+//     if(font){
+//     setFontLoad(true)
+//     }
+//     console.log("font error",error);
+
+// },[font])
+
+
+// useState(()=>{
+//     setFontLoad(true)
+
+// })
+
+
+
+if(!fontsLoad){
+    // return <AppLoading/>
+    return null
+}
+  return ( 
+  <View style={{paddingTop: height,flex:1,
+    backgroundColor:"#101010"}}>
+        <AppStatusBar/>
+   
+    <Slot/>
+    </View>
+    );
+
 };
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+export default Layout;
 
-export default function RootLayout() {
-  const [loaded, error] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-    ...FontAwesome.font,
-  });
-
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
-  useEffect(() => {
-    if (error) throw error;
-  }, [error]);
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
-
-  return <RootLayoutNav />;
-}
-
-function RootLayoutNav() {
-  const colorScheme = useColorScheme();
-
-  return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-      </Stack>
-    </ThemeProvider>
-  );
-}
